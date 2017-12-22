@@ -1,4 +1,6 @@
 import os
+import tarfile
+
 from werkzeug.utils import secure_filename
 
 
@@ -25,6 +27,10 @@ class Validator(object):
         if self.is_validation_pass:
             self.save_uploaded_file()
 
+        if not self.is_tar():
+            self.is_validation_pass = False
+            self.flash_message = 'Cannot untar - not a valid tar.gz file'
+
     def get_results(self):
         return self.is_validation_pass, self.flash_message
 
@@ -39,12 +45,17 @@ class Validator(object):
             self.flash_message = "No selected file"
 
     def is_file_type_allowed(self):
-        if not self.uploaded_file or not self.is_tar():
+        if not self.uploaded_file or not self.uploaded_file.filename.endswith('tar.gz'):
             self.is_validation_pass = False
             self.flash_message = "No tar.gz file"
 
     def is_tar(self):
-        return True
+        try:
+            if tarfile.is_tarfile(os.path.join('/tmp/', self.sanitized_filename)):
+                return True
+            return False
+        except IOError:
+            return False
 
     def save_uploaded_file(self):
         self.uploaded_file.save(os.path.join('/tmp/', self.sanitized_filename))
