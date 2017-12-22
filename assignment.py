@@ -1,6 +1,4 @@
-import os
 
-from werkzeug.utils import secure_filename
 from flask import (
     Flask,
     request,
@@ -14,29 +12,35 @@ UPLOAD_FOLDER = '/tmp/'
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.secret_key = 'super secret key'
 
 
-@app.route("/representation", methods=['POST'])
+@app.route("/representation", methods=['GET', 'POST'])
 def representation():
-    validator = Validator(request)
+    is_validation_pass, flash_message = Validator(request, request.files['file']).get_results()
 
-    # check if the post request has the file part
-    if not validator.is_post_name_correct(request):
-        flash('No file part')
-        return redirect(request.url)
+    if not is_validation_pass:
+        flash(flash_message)
+        return render_template('index.html')
+    return render_template('representation.html')
 
-    uploaded_file = request.files['file']
-
-    # if user does not select file, browser also
-    # submit a empty part without filename
-    if validator.is_empty_filename(uploaded_file):
-        flash('No selected file')
-        return redirect(request.url)
-
-    if validator.is_tar(uploaded_file):
-        filename = secure_filename(uploaded_file.filename)
-        uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return render_template('representation.html')
+    # # check if the post request has the file part
+    # if not validator.is_post_name_correct(request):
+    #     flash('No file part')
+    #     return redirect(request.url)
+    #
+    # uploaded_file = request.files['file']
+    #
+    # # if user does not select file, browser also
+    # # submit a empty part without filename
+    # if validator.is_empty_filename(uploaded_file):
+    #     flash('No selected file')
+    #     return redirect(request.url)
+    #
+    # if validator.is_tar(uploaded_file):
+    #     filename = secure_filename(uploaded_file.filename)
+    #     uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    #     return render_template('representation.html')
 
 
 @app.route("/", methods=['GET'])
