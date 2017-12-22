@@ -16,28 +16,24 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
-def allowed_file(file_obj):
-    return True
-    # return filename.ends_with('.txt')
-
-def validate_input_file(file_obj):
-
-
 @app.route("/representation", methods=['POST'])
 def representation():
+    validator = Validator(request)
 
     # check if the post request has the file part
-    if 'file' not in request.files:
+    if not validator.is_post_name_correct(request):
         flash('No file part')
         return redirect(request.url)
 
     uploaded_file = request.files['file']
+
     # if user does not select file, browser also
     # submit a empty part without filename
-    if uploaded_file.filename == '':
+    if validator.is_empty_filename(uploaded_file):
         flash('No selected file')
         return redirect(request.url)
-    if uploaded_file and allowed_file(uploaded_file):
+
+    if validator.is_tar(uploaded_file):
         filename = secure_filename(uploaded_file.filename)
         uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return render_template('representation.html')
