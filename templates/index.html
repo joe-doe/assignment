@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}
+    Assignment
+{% endblock %}
+
+{% block body %}
+    <h1>Upload new tar.gz file</h1>
+    <form action="/representation" method="post" enctype="multipart/form-data">
+        <p>
+            <input type="file" name="file">
+            <input type="submit" value="Upload">
+        </p>
+    </form>
+{% endblock %}
