@@ -29,7 +29,8 @@ from os.path import join as pjoin
 class Reconstruction(object):
     def __init__(self):
 
-        self.folder = '/home/giskard/.dipy/stanford_hardi/'
+        self.folder = '/home/giskard/.dipy/stanford_hardi'
+        # self.folder = '/home/giskard/PycharmProjects/assignment/data/'
 
         # read nibabel Nifti1 Image object as img
         # and GradientTable object as gtab
@@ -46,10 +47,16 @@ class Reconstruction(object):
         self.tenmodel, self.tenfit = self.reconstruct_voxel()
 
         # calculate
-        # self.fa = self.calculate_fa()
+        self.fa = self.calculate_fa()
 
         # save FA image
         self.save_fa_image()
+
+        # compute colored FA
+        self.colored_fa = self.compute_colored_fa()
+
+        # save png
+        self.save_png()
 
     def read_data(self):
         fraw = pjoin(self.folder, 'dti.nii')
@@ -86,10 +93,36 @@ class Reconstruction(object):
         return fa
 
     def save_fa_image(self):
+        print('Saving FA image')
+
         fa_img = nib.Nifti1Image(self.fa.astype(np.float32), self.img.affine)
         nib.save(fa_img, 'tensor_fa.nii.gz')
 
     def compute_colored_fa(self):
+        print('Computing colored FA')
+
         fa = np.clip(self.fa, 0, 1)
         rgb = color_fa(fa, self.tenfit.evecs)
         nib.save(nib.Nifti1Image(np.array(255 * rgb, 'uint8'), self.img.affine), 'tensor_rgb.nii.gz')
+
+        return rgb
+
+    def save_png(self):
+        print('Computing tensor ellipsoids in a part of the splenium of the CC')
+
+        from dipy.data import get_sphere
+        sphere = get_sphere('symmetric724')
+
+        from dipy.viz import fvtk
+        ren = fvtk.ren()
+
+        evals = self.tenfit.evals[13:43, 44:74, 28:29]
+        evecs = self.tenfit.evecs[13:43, 44:74, 28:29]
+
+        cfa = self.colored_fa[13:43, 44:74, 28:29]
+        cfa /= cfa.max()
+
+        fvtk.add(ren, fvtk.tensor(evals, evecs, cfa, sphere))
+
+        print('Saving illustration as tensor_ellipsoids.png')
+        fvtk.record(ren, n_frames=1, out_path='tensor_ellipsoids.png', size=(600, 600))

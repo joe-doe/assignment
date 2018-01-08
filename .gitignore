@@ -100,4 +100,6 @@ ENV/
 # mypy
 .mypy_cache/
 
+data/
 tensor_fa.nii.gz
+tensor_rgb.nii.gz
