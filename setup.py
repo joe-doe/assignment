@@ -11,6 +11,9 @@ setup(
     description='',
     install_requires=[
         'Werkzeug',
-        'Flask'
+        'Flask',
+        'numpy',
+        'nibabel',
+        'dipy'
     ],
 )

@@ -7,6 +7,7 @@ from flask import (
     flash
 )
 from validator import Validator
+from reconstructure import Reconstruction
 
 UPLOAD_FOLDER = '/tmp/'
 
@@ -45,6 +46,12 @@ def representation():
 
 @app.route("/", methods=['GET'])
 def index():
+    return render_template('index.html')
+
+
+@app.route("/reconstruct", methods=['GET'])
+def reconstruct():
+    a = Reconstruction()
     return render_template('index.html')
 
 
