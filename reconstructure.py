@@ -108,21 +108,4 @@ class Reconstruction(object):
         return rgb
 
     def save_png(self):
-        print('Computing tensor ellipsoids in a part of the splenium of the CC')
-
-        from dipy.data import get_sphere
-        sphere = get_sphere('symmetric724')
-
-        from dipy.viz import fvtk
-        ren = fvtk.ren()
-
-        evals = self.tenfit.evals[13:43, 44:74, 28:29]
-        evecs = self.tenfit.evecs[13:43, 44:74, 28:29]
-
-        cfa = self.colored_fa[13:43, 44:74, 28:29]
-        cfa /= cfa.max()
-
-        fvtk.add(ren, fvtk.tensor(evals, evecs, cfa, sphere))
-
-        print('Saving illustration as tensor_ellipsoids.png')
-        fvtk.record(ren, n_frames=1, out_path='tensor_ellipsoids.png', size=(600, 600))
+        pass

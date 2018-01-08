@@ -103,3 +103,4 @@ ENV/
 data/
 tensor_fa.nii.gz
 tensor_rgb.nii.gz
+todo.md

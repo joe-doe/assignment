@@ -8,6 +8,7 @@ from flask import (
 )
 from validator import Validator
 from reconstructure import Reconstruction
+from transform import Transform
 
 UPLOAD_FOLDER = '/tmp/'
 
@@ -29,10 +30,10 @@ def representation():
     # if not validator.is_post_name_correct(request):
     #     flash('No file part')
     #     return redirect(request.url)
-    #
+    #Transform
     # uploaded_file = request.files['file']
     #
-    # # if user does not select file, browser also
+    # # if user doeTransforms not select file, browser also
     # # submit a empty part without filename
     # if validator.is_empty_filename(uploaded_file):
     #     flash('No selected file')
@@ -52,6 +53,12 @@ def index():
 @app.route("/reconstruct", methods=['GET'])
 def reconstruct():
     a = Reconstruction()
+    return render_template('index.html')
+
+
+@app.route("/transform", methods=['GET'])
+def transform():
+    a = Transform()
     return render_template('index.html')
 
 
